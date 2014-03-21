@@ -1,6 +1,7 @@
 MyCriAtomAudition
 =================
 ADX2LEに簡易オーディション機能を追加するEditor拡張です。
+http://youtu.be/xeD9MG7l94U
 
 ■使い方<br>
 
