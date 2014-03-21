@@ -13,7 +13,7 @@ Assets<br>
 　　└CriAtom<br>
 　　  └MyCriAtomAudition.cs ←ここにコピー<br>
 
-●ミキサー表示  
+●オーディション表示  
 UnityEditorで、<br>
 CRI>My>Open Cri Atom Audition ...のメニューを開く<br>
 
