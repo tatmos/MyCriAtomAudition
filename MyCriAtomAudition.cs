@@ -91,7 +91,6 @@ public class MyCriAtomAudition : EditorWindow {
 				progressBackground = new Texture2D(16,16);
 				progressForground = new Texture2D(16,16);
 			}
-
 			Repaint ();
 		}
 	}
@@ -122,6 +121,7 @@ public class MyCriAtomAudition : EditorWindow {
 		GUILayout.EndScrollView();
 	}
 
+	bool monoFlag = true;
 	private void GUIAudition()
 	{
 		//this.acfPath = EditorGUILayout.TextField("ACF File Path", this.acfPath0, EditorStyles.label);
@@ -132,6 +132,9 @@ public class MyCriAtomAudition : EditorWindow {
 		//EditorGUILayout.BeginVertical();
 		//GUILayout.Space(32.0f);
 		//EditorGUILayout.EndVertical();
+		this.GetSource();
+
+		EditorGUILayout.BeginHorizontal();
 		GUI.color = Color.green;
 		if(GUILayout.Button("Reload"))
 		{
@@ -174,7 +177,14 @@ public class MyCriAtomAudition : EditorWindow {
 			}
 		}
 
-		this.GetSource();
+
+		if(GUILayout.Button("Stop"))
+		{
+			this.source.Stop();
+		}
+		this.monoFlag = GUILayout.Toggle(this.monoFlag,"Mono mode");
+
+		EditorGUILayout.EndHorizontal();
 
 		EditorGUILayout.BeginHorizontal();
 		this.viewId = GUILayout.Toggle(this.viewId,"id");
@@ -191,19 +201,29 @@ public class MyCriAtomAudition : EditorWindow {
 		this.viewCueSheet = GUILayout.Toggle(this.viewCueSheet,"cuesheet");
 		EditorGUILayout.EndHorizontal();
 
+
+
 		foreach (MyCueInfo inf in cueInfoList) {
 			if(this.nameFilter !=""){
 				if(inf.cueInfo.name.ToLower().IndexOf(this.nameFilter.ToLower()) < 0) continue;
 			}
 			EditorGUILayout.BeginHorizontal();
 			
-			if(inf.cueSheet != this.source.cueSheet)GUI.color = Color.gray; else GUI.color = Color.yellow;
-
+			if(this.source.cueSheet == "")
+			{
+				GUI.color = new Color(0.9f,0.9f,0.9f);
+			} else if(inf.cueSheet != this.source.cueSheet)
+			{
+				GUI.color = Color.gray; 
+			}else {
+				GUI.color = Color.yellow;
+			}
 
 			if (GUILayout.Button(inf.cueInfo.name, EditorStyles.radioButton)) {
 				//this.selectedCueId = inf.id;
-
-				this.source.Stop();
+				if (monoFlag) {
+					this.source.Stop();
+				}
 				this.source.cueName = inf.cueInfo.name;
 
 				this.source.Play();
