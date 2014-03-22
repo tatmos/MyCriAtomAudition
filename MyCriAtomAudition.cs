@@ -30,6 +30,15 @@ public class MyCriAtomAudition : EditorWindow {
 	private string nameFilter = "";
 	private bool viewId = true;
 	private bool viewCueSheet = false;
+	private bool viewLength = false;
+	private bool viewPriorty = false;
+	private bool viewType = false;
+	private bool viewUserData = false;
+	private bool viewNumLimits = false;
+	private bool viewNumBlocks = false;
+	private bool viewCategories = false;
+	private bool view3dInfo = false;
+	private bool viewGameVariable = false;
 	// Public
 	public string dspBusSetting = "DspBusSetting_0";
 	#endregion
@@ -169,6 +178,16 @@ public class MyCriAtomAudition : EditorWindow {
 
 		EditorGUILayout.BeginHorizontal();
 		this.viewId = GUILayout.Toggle(this.viewId,"id");
+		
+		this.viewType = GUILayout.Toggle(this.viewType,"type");
+		this.viewUserData = GUILayout.Toggle(this.viewUserData,"userData");
+		this.viewLength = GUILayout.Toggle(this.viewLength,"length");
+		this.viewPriorty = GUILayout.Toggle(this.viewPriorty,"priority");
+		this.viewNumLimits = GUILayout.Toggle(this.viewNumLimits,"limits");
+		this.viewNumBlocks = GUILayout.Toggle(this.viewNumBlocks,"blocks");
+		this.viewCategories = GUILayout.Toggle(this.viewCategories,"categolies");
+		this.view3dInfo = GUILayout.Toggle(this.view3dInfo,"3dInfo");
+		this.viewGameVariable = GUILayout.Toggle(this.viewGameVariable,"variable");
 		this.viewCueSheet = GUILayout.Toggle(this.viewCueSheet,"cuesheet");
 		EditorGUILayout.EndHorizontal();
 
@@ -189,7 +208,72 @@ public class MyCriAtomAudition : EditorWindow {
 
 				this.source.Play();
 			}
-			if(viewId)GUILayout.Label(inf.cueInfo.id.ToString(), GUILayout.Width(40));
+			if(viewId)GUILayout.Label(inf.cueInfo.id.ToString(),GUILayout.ExpandWidth(false));
+			if(viewType)GUILayout.Label(inf.cueInfo.type.ToString(), GUILayout.Width(65));
+			if(viewUserData)GUILayout.Label(inf.cueInfo.userData.ToString(), GUILayout.Width(40));
+			if(viewLength)
+			{
+				if(inf.cueInfo.length < 0){
+					GUILayout.Label("loop", GUILayout.Width(40));
+				} else {
+					GUILayout.Label(inf.cueInfo.length.ToString(), GUILayout.Width(40));
+				}
+			}
+			if(viewPriorty)GUILayout.Label(inf.cueInfo.priority.ToString(), GUILayout.Width(40));
+			if(viewNumLimits)
+			{
+				if(inf.cueInfo.numLimits < 0){
+					GUILayout.Label("noLimit", GUILayout.Width(45));
+				} else {
+					GUILayout.Label(inf.cueInfo.numLimits.ToString(), GUILayout.Width(45));
+				}
+			}
+			if(viewNumBlocks)
+			{
+				if(inf.cueInfo.numBlocks < 1){
+					GUILayout.Label("noBlk", GUILayout.Width(40));
+				} else {
+					GUILayout.Label(inf.cueInfo.numBlocks.ToString(), GUILayout.Width(40));
+				}
+			}
+			if(viewCategories)
+			{
+				int id = 0;
+				foreach(ushort categoryId in inf.cueInfo.categories){
+					if(!(categoryId == 65535 || categoryId == 0)){
+						GUILayout.Label(categoryId.ToString(), GUILayout.Width(65));				
+					} else {
+						GUILayout.Label("no Category",
+					                GUILayout.Width(65));
+					}
+					if(id == 3)break;
+					id++;
+				}
+			}
+			if(view3dInfo)
+			{
+				
+				GUILayout.Label(string.Format("dp {0}", inf.cueInfo.pos3dInfo.dopplerFactor), GUILayout.Width(30));
+				GUILayout.Label(string.Format("({0}-{1})", inf.cueInfo.pos3dInfo.minDistance,inf.cueInfo.pos3dInfo.maxDistance), GUILayout.Width(60));
+				if(!(inf.cueInfo.pos3dInfo.distanceAisacControl == 65535 && inf.cueInfo.pos3dInfo.angleAisacControl == 65535)){
+					GUILayout.Label(string.Format("(d:{0}a:{1})", inf.cueInfo.pos3dInfo.distanceAisacControl, inf.cueInfo.pos3dInfo.angleAisacControl), GUILayout.Width(70));			
+				}else {
+					GUILayout.Label("no AISAC",
+					GUILayout.Width(70));
+				}
+			}
+			if(this.viewGameVariable )
+			{
+				if(!(inf.cueInfo.gameVariableInfo.id == 65535)){
+					GUILayout.Label(string.Format("({0}\"{1}\":{2})", inf.cueInfo.gameVariableInfo.id,
+				                              inf.cueInfo.gameVariableInfo.name,
+												inf.cueInfo.gameVariableInfo.gameValue),
+				                GUILayout.Width(160));
+				} else {
+					GUILayout.Label("no Variable",
+					                GUILayout.Width(160));
+				}
+			}
 			if(viewCueSheet)GUILayout.Label(inf.cueSheet.ToString(), GUILayout.Width(140));
 			EditorGUILayout.EndHorizontal();
 		}
