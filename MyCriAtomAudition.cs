@@ -25,7 +25,7 @@ public class MyCriAtomAudition : EditorWindow {
 	private Rect windowRect = new Rect(10, 10, 100, 100);
 	private bool scaling = true;
 	private Texture2D progressBackground;
-	private Texture2D progressForground;
+	//private Texture2D progressForground;
 	private List<MyCueInfo> cueInfoList = new List<MyCueInfo>();
 	private string nameFilter = "";
 	private bool viewId = true;
@@ -89,7 +89,8 @@ public class MyCriAtomAudition : EditorWindow {
 		{
 			if(progressBackground == null){
 				progressBackground = new Texture2D(16,16);
-				progressForground = new Texture2D(16,16);
+				//progressForground = new Texture2D(16,16);
+				Reload();
 			}
 			Repaint ();
 		}
@@ -121,6 +122,48 @@ public class MyCriAtomAudition : EditorWindow {
 		GUILayout.EndScrollView();
 	}
 
+	private void Reload()
+	{
+		string[] files = System.IO.Directory.GetFiles(Application.streamingAssetsPath);
+		int acbIndex = 0;
+		
+		foreach (string file in files) {
+			if (System.IO.Path.GetExtension(file.Replace("\\","/")) == ".acb") {
+				
+				Debug.Log(file.ToString());
+				//CriAtomAcfInfo.AcbInfo acbInfo = new CriAtomAcfInfo.AcbInfo(System.IO.Path.GetFileNameWithoutExtension(file),
+				//                                                            acbIndex,"",System.IO.Path.GetFileName(file),"","");
+				
+				//Debug.LogWarning("ADX2 acb " + file.ToString());	
+				
+				/* 指定したACBファイル名(キューシート名)を指定してキュー情報を取得 */
+				CriAtomExAcb acb = CriAtomExAcb.LoadAcbFile(null, file.Replace("\\","/"), "");
+				if(acb != null){
+					/* キュー名リストの作成 */
+					int cueIndex = 0;
+					CriAtomEx.CueInfo[] cueInfoListArray = acb.GetCueInfoList();
+					foreach(CriAtomEx.CueInfo cueInfo in cueInfoListArray){
+						//CriAtomAcfInfo.CueInfo tmpCueInfo = new CriAtomAcfInfo.CueInfo(cueInfo.name,cueInfo.id,"");
+						//acbInfo.cueInfoList.Add(cueInfo.id,tmpCueInfo);
+						
+						//Debug.LogWarning("ADX2 cue " + cueInfo.name.ToString());
+						Debug.Log(cueInfo.name);
+						cueInfoList.Add(new MyCueInfo(Path.GetFileNameWithoutExtension(file),cueInfo));
+						
+						cueIndex++;
+					}
+					//CriAtomAcfInfo.acfInfo.acbInfoList.Add(acbInfo);
+					acbIndex++;
+					acb.Dispose();
+					acb = null;
+				} else {
+					Debug.LogWarning("ADX2 acb null" + file.ToString());	
+				}
+			}
+		}
+
+	}
+
 	bool monoFlag = true;
 	private void GUIAudition()
 	{
@@ -138,43 +181,7 @@ public class MyCriAtomAudition : EditorWindow {
 		GUI.color = Color.green;
 		if(GUILayout.Button("Reload"))
 		{
-			string[] files = System.IO.Directory.GetFiles(Application.streamingAssetsPath);
-			int acbIndex = 0;
-
-			foreach (string file in files) {
-				if (System.IO.Path.GetExtension(file.Replace("\\","/")) == ".acb") {
-					
-					Debug.Log(file.ToString());
-					//CriAtomAcfInfo.AcbInfo acbInfo = new CriAtomAcfInfo.AcbInfo(System.IO.Path.GetFileNameWithoutExtension(file),
-					//                                                            acbIndex,"",System.IO.Path.GetFileName(file),"","");
-					
-					//Debug.LogWarning("ADX2 acb " + file.ToString());	
-					
-					/* 指定したACBファイル名(キューシート名)を指定してキュー情報を取得 */
-					CriAtomExAcb acb = CriAtomExAcb.LoadAcbFile(null, file.Replace("\\","/"), "");
-					if(acb != null){
-						/* キュー名リストの作成 */
-						int cueIndex = 0;
-						CriAtomEx.CueInfo[] cueInfoListArray = acb.GetCueInfoList();
-						foreach(CriAtomEx.CueInfo cueInfo in cueInfoListArray){
-							//CriAtomAcfInfo.CueInfo tmpCueInfo = new CriAtomAcfInfo.CueInfo(cueInfo.name,cueInfo.id,"");
-							//acbInfo.cueInfoList.Add(cueInfo.id,tmpCueInfo);
-							
-							//Debug.LogWarning("ADX2 cue " + cueInfo.name.ToString());
-							Debug.Log(cueInfo.name);
-							cueInfoList.Add(new MyCueInfo(Path.GetFileNameWithoutExtension(file),cueInfo));
-
-							cueIndex++;
-						}
-						//CriAtomAcfInfo.acfInfo.acbInfoList.Add(acbInfo);
-						acbIndex++;
-						acb.Dispose();
-						acb = null;
-					} else {
-						Debug.LogWarning("ADX2 acb null" + file.ToString());	
-					}
-				}
-			}
+			Reload ();
 		}
 
 
@@ -220,8 +227,10 @@ public class MyCriAtomAudition : EditorWindow {
 			}
 
 			if (GUILayout.Button(inf.cueInfo.name, EditorStyles.radioButton)) {
+
+				Event e = Event.current;
 				//this.selectedCueId = inf.id;
-				if (monoFlag) {
+				if (monoFlag || (e.shift == false)) {
 					this.source.Stop();
 				}
 				this.source.cueName = inf.cueInfo.name;
