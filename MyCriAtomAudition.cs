@@ -255,9 +255,11 @@ public class MyCriAtomAudition : EditorWindow {
 
 				Event e = Event.current;
 				//this.selectedCueId = inf.id;
-				if (monoFlag || (e.shift == false)) {
-					this.source.Stop();
-				}
+				if (monoFlag) {
+					if(e.shift == false){
+						this.source.Stop();
+					}
+				} 
 				this.source.cueName = inf.cueInfo.name;
 
 				this.source.Play();
