@@ -25,7 +25,7 @@ public class MyCriAtomAudition : EditorWindow {
 	private Rect windowRect = new Rect(10, 10, 100, 100);
 	private bool scaling = true;
 	private Texture2D progressBackground;
-	//private Texture2D progressForground;
+	private Texture2D progressForground;
 	private List<MyCueInfo> cueInfoList = new List<MyCueInfo>();
 	private string nameFilter = "";
 	private bool viewId = true;
@@ -88,8 +88,11 @@ public class MyCriAtomAudition : EditorWindow {
 		if (/*EditorApplication.isCompiling && */EditorApplication.isPlaying)
 		{
 			if(progressBackground == null){
-				progressBackground = new Texture2D(16,16);
-				//progressForground = new Texture2D(16,16);
+				progressBackground = new Texture2D(1,1);
+				progressForground = new Texture2D(1,1);
+				
+				progressBackground.SetPixel(0, 0, new Color(1,1,1,0.2f));
+				progressForground.SetPixel(0, 0, new Color(1,1,1,0.1f));
 				Reload();
 			}
 			Repaint ();
@@ -197,12 +200,14 @@ public class MyCriAtomAudition : EditorWindow {
 		this.viewId = GUILayout.Toggle(this.viewId,"id");
 		
 		this.viewType = GUILayout.Toggle(this.viewType,"type");
-		this.viewUserData = GUILayout.Toggle(this.viewUserData,"userData");
+		this.viewUserData = GUILayout.Toggle(this.viewUserData,"user");
 		this.viewLength = GUILayout.Toggle(this.viewLength,"length");
 		this.viewPriorty = GUILayout.Toggle(this.viewPriorty,"priority");
 		this.viewNumLimits = GUILayout.Toggle(this.viewNumLimits,"limits");
+		EditorGUILayout.EndHorizontal();
+		EditorGUILayout.BeginHorizontal();
 		this.viewNumBlocks = GUILayout.Toggle(this.viewNumBlocks,"blocks");
-		this.viewCategories = GUILayout.Toggle(this.viewCategories,"categolies");
+		this.viewCategories = GUILayout.Toggle(this.viewCategories,"categ");
 		this.view3dInfo = GUILayout.Toggle(this.view3dInfo,"3dInfo");
 		this.viewGameVariable = GUILayout.Toggle(this.viewGameVariable,"variable");
 		this.viewCueSheet = GUILayout.Toggle(this.viewCueSheet,"cuesheet");
@@ -211,6 +216,19 @@ public class MyCriAtomAudition : EditorWindow {
 
 
 		foreach (MyCueInfo inf in cueInfoList) {
+			if(viewLength)
+			{
+				if(inf.cueInfo.length < 0){
+				} else {
+					Rect r = GUILayoutUtility.GetLastRect();
+					DrawProgress(new Vector2(18,r.y+18),
+					             new Vector2(Screen.width/2,r.height),
+					             inf.cueInfo.length/20000f,
+					             inf.cueInfo.length/20000f,
+					             "");
+				}
+			}
+
 			if(this.nameFilter !=""){
 				if(inf.cueInfo.name.ToLower().IndexOf(this.nameFilter.ToLower()) < 0) continue;
 			}
@@ -245,7 +263,7 @@ public class MyCriAtomAudition : EditorWindow {
 				if(inf.cueInfo.length < 0){
 					GUILayout.Label("loop", GUILayout.Width(40));
 				} else {
-					GUILayout.Label(inf.cueInfo.length.ToString(), GUILayout.Width(40));
+					GUILayout.Label(string.Format("{0:F3}", inf.cueInfo.length/1000f), GUILayout.Width(40));
 				}
 			}
 			if(viewPriorty)GUILayout.Label(inf.cueInfo.priority.ToString(), GUILayout.Width(40));
@@ -307,5 +325,23 @@ public class MyCriAtomAudition : EditorWindow {
 			EditorGUILayout.EndHorizontal();
 		}
 		GUI.color = Color.white;
+	}
+
+	private void DrawProgress(Vector2 location ,Vector2 size,float progress,float progressHold,string valueString)
+	{
+		Color tmpColor = GUI.color;
+		//GUI.color = Color.gray;
+		//GUI.DrawTexture(new Rect(location.x, location.y, size.x, size.y), progressBackground);
+		if(progress > 1){
+			GUI.color = new Color(0.5f,1,0.5f,0.1f);
+		} else {
+			GUI.color = new Color(1,0.5f,1.0f,0.1f);
+		}
+		EditorGUI.DrawTextureAlpha(new Rect(location.x, location.y, size.x * progress, size.y), progressForground); 
+		//EditorGUI.DrawTextureAlpha(new Rect(size.x * progressHold-1f, location.y, 2f, size.y), progressForground); 
+		//EditorGUI.DrawTextureAlpha
+		//GUI.color = Color.white;
+		//EditorGUI.DropShadowLabel(new Rect(location.x, location.y, size.x, size.y), valueString); 
+		GUI.color = tmpColor;
 	}
 }
