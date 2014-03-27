@@ -39,6 +39,7 @@ public class MyCriAtomAudition : EditorWindow {
 	private bool viewCategories = false;
 	private bool view3dInfo = false;
 	private bool viewGameVariable = false;
+	private Vector2 cueScrollPosition;
 	// Public
 	public string dspBusSetting = "DspBusSetting_0";
 	#endregion
@@ -214,17 +215,23 @@ public class MyCriAtomAudition : EditorWindow {
 		EditorGUILayout.EndHorizontal();
 
 
-
+		cueScrollPosition = EditorGUILayout.BeginScrollView(cueScrollPosition);
+		EditorGUILayout.PrefixLabel("");
 		foreach (MyCueInfo inf in cueInfoList) {
 			if(viewLength)
 			{
+				Rect r = GUILayoutUtility.GetLastRect();
 				if(inf.cueInfo.length < 0){
-				} else {
-					Rect r = GUILayoutUtility.GetLastRect();
 					DrawProgress(new Vector2(18,r.y+18),
 					             new Vector2(Screen.width/2,r.height),
-					             inf.cueInfo.length/20000f,
-					             inf.cueInfo.length/20000f,
+					             2,
+					             2,
+					             "");
+				} else {
+					DrawProgress(new Vector2(18,r.y+18),
+					             new Vector2(Screen.width/2,r.height),
+					             inf.cueInfo.length/12000f,
+					             inf.cueInfo.length/12000f,
 					             "");
 				}
 			}
@@ -324,6 +331,7 @@ public class MyCriAtomAudition : EditorWindow {
 			if(viewCueSheet)GUILayout.Label(inf.cueSheet.ToString(), GUILayout.Width(140));
 			EditorGUILayout.EndHorizontal();
 		}
+		EditorGUILayout.EndScrollView();
 		GUI.color = Color.white;
 	}
 
@@ -333,9 +341,9 @@ public class MyCriAtomAudition : EditorWindow {
 		//GUI.color = Color.gray;
 		//GUI.DrawTexture(new Rect(location.x, location.y, size.x, size.y), progressBackground);
 		if(progress > 1){
-			GUI.color = new Color(0.5f,1,0.5f,0.1f);
+			GUI.color = new Color(0.5f,1,0.5f,0.2f);
 		} else {
-			GUI.color = new Color(1,0.5f,1.0f,0.1f);
+			GUI.color = new Color(0.8f,0.5f,0.3f,0.2f);
 		}
 		EditorGUI.DrawTextureAlpha(new Rect(location.x, location.y, size.x * progress, size.y), progressForground); 
 		//EditorGUI.DrawTextureAlpha(new Rect(size.x * progressHold-1f, location.y, 2f, size.y), progressForground); 
