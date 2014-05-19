@@ -20,3 +20,5 @@ CRI>My>Open Cri Atom Audition ...のメニューを開く<br>
 ●注意
 再生にはシーン内に再生可能なCriAtomSourceのオブジェクトが存在している必要があります。<br>
 Editor側では再生機能を持つことが出来ないための苦肉の策となっています。
+
+This software is released under the MIT License, see LICENSE.txt.
