@@ -309,10 +309,19 @@ public class MyCriAtomAudition : EditorWindow {
 			if(view3dInfo)
 			{
 				
-				GUILayout.Label(string.Format("dp {0}", inf.cueInfo.pos3dInfo.dopplerFactor), GUILayout.Width(30));
+				GUILayout.Label(string.Format("doppler {0}", inf.cueInfo.pos3dInfo.dopplerFactor), GUILayout.Width(30));
 				GUILayout.Label(string.Format("({0}-{1})", inf.cueInfo.pos3dInfo.minDistance,inf.cueInfo.pos3dInfo.maxDistance), GUILayout.Width(60));
-				if(!(inf.cueInfo.pos3dInfo.distanceAisacControl == 65535 && inf.cueInfo.pos3dInfo.angleAisacControl == 65535)){
-					GUILayout.Label(string.Format("(d:{0}a:{1})", inf.cueInfo.pos3dInfo.distanceAisacControl, inf.cueInfo.pos3dInfo.angleAisacControl), GUILayout.Width(70));			
+
+				if(!(inf.cueInfo.pos3dInfo.distanceAisacControl == 65535 && 
+				     inf.cueInfo.pos3dInfo.listenerBaseAngleAisacControl == 65535 && 
+				     inf.cueInfo.pos3dInfo.sourceBaseAngleAisacControl == 65535)){
+					GUILayout.Label(string.Format("(distance:{0}listenrAngle:{1}sourceAngle:{2})", 
+					                              inf.cueInfo.pos3dInfo.distanceAisacControl, 
+					                              inf.cueInfo.pos3dInfo.listenerBaseAngleAisacControl,
+					                              inf.cueInfo.pos3dInfo.sourceBaseAngleAisacControl), GUILayout.Width(70));	
+
+//				if(!(inf.cueInfo.pos3dInfo.distanceAisacControl == 65535 && inf.cueInfo.pos3dInfo.angleAisacControl == 65535)){
+//					GUILayout.Label(string.Format("(d:{0}a:{1})", inf.cueInfo.pos3dInfo.distanceAisacControl, inf.cueInfo.pos3dInfo.angleAisacControl), GUILayout.Width(70));			
 				}else {
 					GUILayout.Label("no AISAC",
 					GUILayout.Width(70));
